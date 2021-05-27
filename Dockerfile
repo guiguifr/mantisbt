@@ -3,7 +3,6 @@
 #
 
 FROM php:apache
-MAINTAINER XelaRellum <XelaRellum@web.de>
 
 RUN a2enmod rewrite
 
