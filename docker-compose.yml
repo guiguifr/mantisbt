@@ -1,5 +1,5 @@
 mantisbt:
-  image: xlrl/mantisbt:latest
+  build: ./mantisbt
   ports:
     - "8989:80"
   links:
