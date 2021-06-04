@@ -1,92 +1,174 @@
-`MantisBT` is an open source issue tracker that provides
-a delicate balance between simplicity and power.
+#  LAMP stack built with Docker Compose
 
-## Example docker-compose.yml
-The examples suppose you will have the data for your containers in `/srv/mantis`. Adapt for your server.
+  
 
-```
-mantisbt:
-  image: xlrl/mantisbt:latest
-  ports:
-    - "8989:80"
-  links:
-    - mysql
-  volumes:
-    - ./config:/var/www/html/config
-	- ./custom:/var/www/html/custom
-  restart: always
+![Landing Page](https://preview.ibb.co/gOTa0y/LAMP_STACK.png)
 
-mysql:
-  image: mariadb:latest
-  environment:
-    - MYSQL_ROOT_PASSWORD=root
-    - MYSQL_DATABASE=bugtracker
-    - MYSQL_USER=mantisbt
-    - MYSQL_PASSWORD=mantisbt
-  volumes:
-	- ./mysql:/var/lib/mysql
-  restart: always
-```
+  
 
-> You can use `mysql`/`postgres` instead of `mariadb`.
+A basic LAMP stack environment built using Docker Compose. It consists of the following:
 
-## Install
+* PHP
+* Apache
+* MySQL
+* phpMyAdmin
+* Redis
 
-```
-$ firefox http://localhost:8989/admin/install.php
->>> username: administrator
->>> password: root
-```
+As of now, we have several different PHP versions. Use appropriate php version as needed:
 
-```
-==================================================================================
-Installation Options
-==================================================================================
-Type of Database                                        MySQL/MySQLi
-Hostname (for Database Server)                          mysql
-Username (for Database)                                 mantisbt
-Password (for Database)                                 mantisbt
-Database name (for Database)                            bugtracker
-Admin Username (to create Database if required)         root
-Admin Password (to create Database if required)         root
-Print SQL Queries instead of Writing to the Database    [ ]
-Attempt Installation                                    [Install/Upgrade Database]
-==================================================================================
+* 5.4.x
+* 5.6.x
+* 7.1.x
+* 7.2.x
+* 7.3.x
+* 7.4.x
+* 8.0.x
+
+> Please note that we simplified the project structure from several branches for each php version, to one centralized master branch. Please let us know if you encouter any problems. 
+##  Installation
+ 
+* Clone this repository on your local computer
+* configure .env as needed 
+* Run the `docker-compose up -d`.
+
+```shell
+git clone https://github.com/sprintcube/docker-compose-lamp.git
+cd docker-compose-lamp/
+cp sample.env .env
+// modify sample.env as needed
+docker-compose up -d
+// visit localhost
 ```
 
-## Email
+Your LAMP stack is now ready!! You can access it via `http://localhost`.
 
-Append following to `/srv/mantis/config/config_inc.php`
+##  Configuration and Usage
 
+### General Information 
+This Docker Stack is build for local development and not for production usage.
+
+### Configuration
+This package comes with default configuration options. You can modify them by creating `.env` file in your root directory.
+To make it easy, just copy the content from `sample.env` file and update the environment variable values as per your need.
+
+### Configuration Variables
+There are following configuration variables available and you can customize them by overwritting in your own `.env` file.
+
+---
+#### PHP
+---
+_**PHPVERSION**_
+Is used to specify which PHP Version you want to use. Defaults always to latest PHP Version. 
+
+_**PHP_INI**_
+Define your custom `php.ini` modification to meet your requirments. 
+
+---
+#### Apache 
+---
+
+_**DOCUMENT_ROOT**_
+
+It is a document root for Apache server. The default value for this is `./www`. All your sites will go here and will be synced automatically.
+
+_**APACHE_DOCUMENT_ROOT**_
+
+Apache config file value. The default value for this is /var/www/html.
+
+_**VHOSTS_DIR**_
+
+This is for virtual hosts. The default value for this is `./config/vhosts`. You can place your virtual hosts conf files here.
+
+> Make sure you add an entry to your system's `hosts` file for each virtual host.
+
+_**APACHE_LOG_DIR**_
+
+This will be used to store Apache logs. The default value for this is `./logs/apache2`.
+
+---
+#### Database
+---
+
+_**DATABASE**_
+Define which MySQL or MariaDB Version you would like to use. 
+
+_**MYSQL_DATA_DIR**_
+
+This is MySQL data directory. The default value for this is `./data/mysql`. All your MySQL data files will be stored here.
+
+_**MYSQL_LOG_DIR**_
+
+This will be used to store Apache logs. The default value for this is `./logs/mysql`.
+
+## Web Server
+
+Apache is configured to run on port 80. So, you can access it via `http://localhost`.
+
+#### Apache Modules
+
+By default following modules are enabled.
+
+* rewrite
+* headers
+
+> If you want to enable more modules, just update `./bin/webserver/Dockerfile`. You can also generate a PR and we will merge if seems good for general purpose.
+> You have to rebuild the docker image by running `docker-compose build` and restart the docker containers.
+
+#### Connect via SSH
+
+You can connect to web server using `docker-compose exec` command to perform various operation on it. Use below command to login to container via ssh.
+
+```shell
+docker-compose exec webserver bash
 ```
-$g_phpMailer_method = PHPMAILER_METHOD_SMTP;
-$g_administrator_email = 'admin@example.org';
-$g_webmaster_email = 'webmaster@example.org';
-$g_return_path_email = 'mantisbt@example.org';
-$g_from_email = 'mantisbt@example.org';
-$g_smtp_host = 'smtp.example.org';
-$g_smtp_port = 25;
-$g_smtp_connection_mode = 'tls';
-$g_smtp_username = 'mantisbt';
-$g_smtp_password = '********';
-```
 
-## LDAP
+## PHP
 
-Append following to `/srv/mantis/config/config_inc.php` for LDAP
-authentication against an Active Directory server:
+The installed version of php depends on your `.env`file.
 
-```
-$g_login_method = LDAP;
-$g_ldap_server = 'ldap://dc.example.com';
-$g_ldap_root_dn = 'dc=example,dc=com';
-$g_ldap_bind_dn = 'cn=readuser, dc=example, dc=com';
-$g_ldap_bind_passwd = 'geheim123';
-$g_ldap_organization = '';
-$g_use_ldap_email = ON;
-$g_use_ldap_realname = ON;
-$g_ldap_protocol_version = 3;
-$g_ldap_follow_referrals = OFF;
-$g_ldap_uid_field = 'sAMAccountName';
-```
+#### Extensions
 
+By default following extensions are installed. 
+May differ for PHP Verions <7.x.x
+
+* mysqli
+* pdo_sqlite
+* pdo_mysql
+* mbstring
+* zip
+* intl
+* mcrypt
+* curl
+* json
+* iconv
+* xml
+* xmlrpc
+* gd
+
+> If you want to install more extension, just update `./bin/webserver/Dockerfile`. You can also generate a PR and we will merge if it seems good for general purpose.
+> You have to rebuild the docker image by running `docker-compose build` and restart the docker containers.
+
+## phpMyAdmin
+
+phpMyAdmin is configured to run on port 8080. Use following default credentials.
+
+http://localhost:8080/  
+username: root  
+password: tiger
+
+## Redis
+
+It comes with Redis. It runs on default port `6379`.
+
+## Contributing
+We are happy if you want to create a pull request or help people with their issues. If you want to create a PR, please remember that this stack is not built for production usage, and changes should good for general purpose and not overspecialized. 
+> Please note that we simplified the project structure from several branches for each php version, to one centralized master branch.  Please create your PR against master branch. 
+> 
+Thank you! 
+
+## Why you shouldn't use this stack unmodified in production
+We want to empower developers to quickly create creative Applications. Therefore we are providing an easy to set up a local development environment for several different Frameworks and PHP Versions. 
+In Production you should modify at a minimum the following subjects:
+
+* php handler: mod_php=> php-fpm
+* secure mysql users with proper source IP limitations
