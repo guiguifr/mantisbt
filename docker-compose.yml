@@ -3,30 +3,18 @@ mantisbt:
   ports:
     - "8989:80"
   links:
-#    - mysql
     - postgres
   restart: always
   volumes:
     - ./config:/var/www/html/config
     - ./custom:/var/www/html/custom
 
-#mysql:
-#  image: mariadb:latest
-#  environment:
-#    - MYSQL_ROOT_PASSWORD=root
-#    - MYSQL_DATABASE=bugtracker
-#    - MYSQL_USER=mantis
-#    - MYSQL_PASSWORD=mantis
-#  restart: always
-#  volumes:
-#    - ./mysql:/var/lib/mysql
-
 postgres:
   build: ./postgresql
   environment:
     - POSTGRES_USER=mantis
     - POSTGRES_PASSWORD=mantis
-#    - POSTGRES_DB=bugtracker
+    - POSTGRES_DB=bugtracker
   restart: always
   volumes:
     - ./postgresql:/var/lib/postgresql
