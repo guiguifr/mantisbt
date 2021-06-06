@@ -1,17 +1,25 @@
-version: '3'
+version: '3.8'
 services:
+
+  mantisbt:
+    build: ./mantisbt
+    ports:
+      - "8989:80"
+    links:
+      - postgres
+    restart: always
+
   postgres:
     image: postgres:11
     hostname: postgres
-    ports:
-      - "5432:5432"
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
 
   pgadmin:
-    image: dpage/pgadmin4:5.3
+    build: ./pgadmin
+#    image: dpage/pgadmin4:5.3
     ports:
       - "80:80"
     links: 
@@ -19,5 +27,10 @@ services:
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
-    volumes: 
-      - ./pgadmin:/var/lib/pgadmin
+    volumes:
+#      - type: volume
+#      source: ./pgadmin/pgadmin4.db
+#      target: /var/lib/pgadmin/pgadmin4.db
+#      volume:
+#        nocopy: true
+      - './pgadmin/pgadmin4.db:/var/lib/pgadmin/pgadmin4.db'
