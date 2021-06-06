@@ -18,8 +18,7 @@ services:
       POSTGRES_DB: ${DB_NAME}
 
   pgadmin:
-    build: ./pgadmin
-#    image: dpage/pgadmin4:5.3
+    image: dpage/pgadmin4:5.3
     ports:
       - "80:80"
     links: 
@@ -28,9 +27,4 @@ services:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
     volumes:
-#      - type: volume
-#      source: ./pgadmin/pgadmin4.db
-#      target: /var/lib/pgadmin/pgadmin4.db
-#      volume:
-#        nocopy: true
-      - './pgadmin/pgadmin4.db:/var/lib/pgadmin/pgadmin4.db'
+      - ./pgadmin/pgadmin4.db:/var/lib/pgadmin/pgadmin4.db
