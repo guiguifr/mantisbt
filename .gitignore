@@ -1,5 +1,5 @@
 /.env
-/pgadmin/*
+/pgadmin/pgadmin4.db
 /.vscode
 .DS_Store
 
